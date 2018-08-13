@@ -203,8 +203,10 @@ before_cache:
   - rm -rf $HOME/.m2/repository/io/prestosql
 
 # Slack update to Criteo's internal boss-db channel
-notifications:
-  slack: criteo:A7O7RrW6MmxK3ECeKeJBgJXP
+# Turned off
+#notifications:
+#    slack: criteo:A7O7RrW6MmxK3ECeKeJBgJXP
+
 
 # Allow building only master & criteo-master for now
 branches:
