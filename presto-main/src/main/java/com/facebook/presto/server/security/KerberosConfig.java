@@ -21,8 +21,11 @@ import java.io.File;
 
 public class KerberosConfig
 {
+    public static final String HTTP_SERVER_AUTHENTICATION_KRB5_KEYTAB = "http.server.authentication.krb5.keytab";
+
     private File kerberosConfig;
     private String serviceName;
+    private String serviceHostName;
     private File keytab;
 
     @NotNull
@@ -35,6 +38,18 @@ public class KerberosConfig
     public KerberosConfig setKerberosConfig(File kerberosConfig)
     {
         this.kerberosConfig = kerberosConfig;
+        return this;
+    }
+
+    public String getServiceHostName()
+    {
+        return serviceHostName;
+    }
+
+    @Config("http.server.authentication.krb5.service-hostname")
+    public KerberosConfig setServiceHostName(String serviceHostName)
+    {
+        this.serviceHostName = serviceHostName;
         return this;
     }
 
@@ -56,7 +71,7 @@ public class KerberosConfig
         return keytab;
     }
 
-    @Config("http.server.authentication.krb5.keytab")
+    @Config(HTTP_SERVER_AUTHENTICATION_KRB5_KEYTAB)
     public KerberosConfig setKeytab(File keytab)
     {
         this.keytab = keytab;

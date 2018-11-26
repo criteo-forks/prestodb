@@ -64,7 +64,8 @@ public class KerberosAuthenticator
         System.setProperty("java.security.krb5.conf", config.getKerberosConfig().getAbsolutePath());
 
         try {
-            String hostname = InetAddress.getLocalHost().getCanonicalHostName().toLowerCase(Locale.US);
+            String canonicalLocalHostName = InetAddress.getLocalHost().getCanonicalHostName().toLowerCase(Locale.US);
+            String hostname = config.getServiceHostName() == null ? canonicalLocalHostName : config.getServiceHostName();
             String servicePrincipal = config.getServiceName() + "/" + hostname;
             loginContext = new LoginContext("", null, null, new Configuration()
             {
