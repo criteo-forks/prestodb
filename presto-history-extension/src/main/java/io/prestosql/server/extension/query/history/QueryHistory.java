@@ -33,6 +33,9 @@ public class QueryHistory
 
     public QueryHistory(QueryInfo queryInfo, String cluster) throws IOException
     {
+        if (cluster == null) {
+            cluster = null;
+        }
         this.cluster = cluster;
         queryId = queryInfo.getQueryId().getId();
         queryState = queryInfo.getState().name();
