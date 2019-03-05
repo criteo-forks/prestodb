@@ -213,6 +213,7 @@ branches:
   only:
   - master
   - criteo-master
+  - new-criteo-master
 
 before_deploy:
   - mkdir /tmp/artifacts
