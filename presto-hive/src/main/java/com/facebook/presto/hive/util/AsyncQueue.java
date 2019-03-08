@@ -208,6 +208,11 @@ public class AsyncQueue<T>
                 }, directExecutor());
     }
 
+    public synchronized int size()
+    {
+        return elements.size();
+    }
+
     private static void completeAsync(Executor executor, SettableFuture<?> future)
     {
         executor.execute(() -> future.set(null));
