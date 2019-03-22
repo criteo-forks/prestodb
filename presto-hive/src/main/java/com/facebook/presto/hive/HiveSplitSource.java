@@ -16,6 +16,7 @@ package com.facebook.presto.hive;
 import com.facebook.presto.hive.InternalHiveSplit.InternalHiveBlock;
 import com.facebook.presto.hive.util.AsyncQueue;
 import com.facebook.presto.hive.util.AsyncQueue.BorrowResult;
+import com.facebook.presto.hive.util.ThrottledAsyncQueue;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ConnectorSession;
 import com.facebook.presto.spi.ConnectorSplit;
@@ -127,6 +128,7 @@ class HiveSplitSource
             String tableName,
             TupleDomain<? extends ColumnHandle> compactEffectivePredicate,
             int maxInitialSplits,
+            int maxSplitsPerSec,
             int maxOutstandingSplits,
             DataSize maxOutstandingSplitsSize,
             HiveSplitLoader splitLoader,
@@ -141,7 +143,7 @@ class HiveSplitSource
                 compactEffectivePredicate,
                 new PerBucket()
                 {
-                    private final AsyncQueue<InternalHiveSplit> queue = new AsyncQueue<>(maxOutstandingSplits, executor);
+                    private final AsyncQueue<InternalHiveSplit> queue = queue(maxOutstandingSplits, maxSplitsPerSec, executor);
 
                     @Override
                     public ListenableFuture<?> offer(OptionalInt bucketNumber, InternalHiveSplit connectorSplit)
@@ -183,6 +185,7 @@ class HiveSplitSource
             String tableName,
             TupleDomain<? extends ColumnHandle> compactEffectivePredicate,
             int estimatedOutstandingSplitsPerBucket,
+            int maxSplitsPerSec,
             int maxInitialSplits,
             DataSize maxOutstandingSplitsSize,
             HiveSplitLoader splitLoader,
@@ -236,7 +239,7 @@ class HiveSplitSource
                         AtomicBoolean isNew = new AtomicBoolean();
                         AsyncQueue<InternalHiveSplit> queue = queues.computeIfAbsent(bucketNumber.getAsInt(), ignored -> {
                             isNew.set(true);
-                            return new AsyncQueue<>(estimatedOutstandingSplitsPerBucket, executor);
+                            return queue(estimatedOutstandingSplitsPerBucket, maxSplitsPerSec, executor);
                         });
                         if (isNew.get() && finished.get()) {
                             // Check `finished` and invoke `queue.finish` after the `queue` is added to the map.
@@ -490,6 +493,14 @@ class HiveSplitSource
         void finish();
 
         boolean isFinished(OptionalInt bucketNumber);
+
+        default AsyncQueue<InternalHiveSplit> queue(int maxOutstandingSplits, int maxSplitsPerSec, Executor executor)
+        {
+            if (maxSplitsPerSec > 0) {
+                return new ThrottledAsyncQueue<>(maxSplitsPerSec, maxOutstandingSplits, executor);
+            }
+            return new AsyncQueue<>(maxOutstandingSplits, executor);
+        }
     }
 
     static class State

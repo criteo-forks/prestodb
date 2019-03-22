@@ -320,6 +320,7 @@ public class TestBackgroundHiveSplitLoader
                 SIMPLE_TABLE.getTableName(),
                 compactEffectivePredicate,
                 1,
+                0,
                 1,
                 new DataSize(32, MEGABYTE),
                 backgroundHiveSplitLoader,

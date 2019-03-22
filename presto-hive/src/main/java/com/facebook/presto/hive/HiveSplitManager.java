@@ -88,6 +88,7 @@ public class HiveSplitManager
     private final int maxPartitionBatchSize;
     private final int maxInitialSplits;
     private final int splitLoaderConcurrency;
+    private final int maxSplitsPerSec;
     private final boolean recursiveDfsWalkerEnabled;
     private final CounterStat highMemorySplitSourceCounter;
 
@@ -115,6 +116,7 @@ public class HiveSplitManager
                 hiveClientConfig.getMaxPartitionBatchSize(),
                 hiveClientConfig.getMaxInitialSplits(),
                 hiveClientConfig.getSplitLoaderConcurrency(),
+                hiveClientConfig.getMaxSplitsPerSec(),
                 hiveClientConfig.getRecursiveDirWalkerEnabled());
     }
 
@@ -132,6 +134,7 @@ public class HiveSplitManager
             int maxPartitionBatchSize,
             int maxInitialSplits,
             int splitLoaderConcurrency,
+            int maxSplitsPerSec,
             boolean recursiveDfsWalkerEnabled)
     {
         this.metastoreProvider = requireNonNull(metastoreProvider, "metastore is null");
@@ -148,6 +151,7 @@ public class HiveSplitManager
         this.maxPartitionBatchSize = maxPartitionBatchSize;
         this.maxInitialSplits = maxInitialSplits;
         this.splitLoaderConcurrency = splitLoaderConcurrency;
+        this.maxSplitsPerSec = maxSplitsPerSec;
         this.recursiveDfsWalkerEnabled = recursiveDfsWalkerEnabled;
     }
 
@@ -214,6 +218,7 @@ public class HiveSplitManager
                         table.getTableName(),
                         layout.getCompactEffectivePredicate(),
                         maxInitialSplits,
+                        maxSplitsPerSec,
                         maxOutstandingSplits,
                         maxOutstandingSplitsSize,
                         hiveSplitLoader,
@@ -227,6 +232,7 @@ public class HiveSplitManager
                         table.getTableName(),
                         layout.getCompactEffectivePredicate(),
                         maxInitialSplits,
+                        maxSplitsPerSec,
                         maxOutstandingSplits,
                         maxOutstandingSplitsSize,
                         hiveSplitLoader,
