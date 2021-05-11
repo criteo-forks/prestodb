@@ -147,10 +147,10 @@ public class DiscoveryHiveCluster
         }
         List<ServiceHealth> response = result.getResponse();
         return response.stream().map(uri -> {
-            String host = uri.getNode().getNode();
-            if (host == null || host.isEmpty()) {
-                host = uri.getNode().getAddress();
-            }
+        	String host = uri.getService().getAddress();
+        	if (host == null || host.isEmpty()) {
+        	  host = uri.getNode().getAddress();
+        	}
             int port = uri.getService().getPort();
             return HostAndPort.fromParts(host, port);
         }).collect(toList());
